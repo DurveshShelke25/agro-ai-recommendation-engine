@@ -1,0 +1,14 @@
+# Virtual Environments
+venv/
+env/
+
+# Python Cache
+__pycache__/
+*.pyc
+
+# Machine Learning Model Files
+*.h5
+*.pkl
+
+# Mac System Files (if applicable)
+.DS_Store

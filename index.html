@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Avdhut Agro Recommendations</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 40px; background-color: #f4f7f6; }
+        .container { max-width: 400px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        input, button { width: 100%; padding: 10px; margin: 10px 0; box-sizing: border-box; }
+        button { background-color: #28a745; color: white; border: none; cursor: pointer; font-weight: bold; }
+        button:hover { background-color: #218838; }
+        .product-card { background: #e9ecef; padding: 10px; margin-top: 10px; border-radius: 4px; border-left: 4px solid #28a745; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Agro AI Recommendations</h2>
+    <p>Enter a Customer ID to see what they should buy next.</p>
+    
+    <input type="number" id="userId" placeholder="Enter User ID (0 to 99)" min="0" max="99">
+    <button onclick="fetchRecommendations()">Get Recommendations</button>
+
+    <div id="results">
+        </div>
+</div>
+
+<script>
+    async function fetchRecommendations() {
+        const userId = document.getElementById('userId').value;
+        const resultsDiv = document.getElementById('results');
+        
+        if (!userId) {
+            alert("Please enter a User ID");
+            return;
+        }
+
+        resultsDiv.innerHTML = "<p><i>Running AI model...</i></p>";
+
+        try {
+            // This is where the frontend talks to your Python FastAPI backend!
+            const response = await fetch(`http://127.0.0.1:8000/recommend/${userId}`);
+            
+            if (!response.ok) throw new Error("User not found or server error");
+            
+            const data = await response.json();
+            
+            // Clear the "loading" text
+            resultsDiv.innerHTML = "<h3>Top Suggestions:</h3>";
+            
+            // Loop through the JSON data and display it
+            data.forEach(item => {
+                resultsDiv.innerHTML += `
+                    <div class="product-card">
+                        <strong>${item.product_name}</strong><br>
+                        AI Interest Score: ${item.interest_score} / 5.0
+                    </div>
+                `;
+            });
+
+        } catch (error) {
+            resultsDiv.innerHTML = `<p style="color:red;">Error: Make sure your FastAPI server is running!</p>`;
+            console.error(error);
+        }
+    }
+</script>
+
+</body>
+</html>
